@@ -309,7 +309,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj czasownik „pracować”",
         root: "kerja",
         affixes: ["ber-", "me-", "di-", "-kan"],
-        answer: "ber-kerja",
+        answer: "ber-",
         pl: "bekerja — pracować (ber- + kerja)",
       },
       {
@@ -318,7 +318,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj czasownik „pływać”",
         root: "renang",
         affixes: ["ber-", "ter-", "-i", "pe-"],
-        answer: "ber-renang",
+        answer: "ber-",
         pl: "berenang — pływać",
       },
       {
@@ -365,7 +365,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj „czytać” (root: baca)",
         root: "baca",
         affixes: ["mem-", "ber-", "ter-", "-an"],
-        answer: "mem-baca",
+        answer: "mem-",
         pl: "membaca — czytać",
       },
       {
@@ -445,7 +445,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj „wysyłać” (root: kirim)",
         root: "kirim",
         affixes: ["meng-", "ber-", "-lah", "ke-"],
-        answer: "meng-kirim",
+        answer: "meng-",
         pl: "mengirim — wysyłać (k znika)",
       },
       {
@@ -489,7 +489,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zamień „masak” na stronę bierną",
         root: "masak",
         affixes: ["di-", "me-", "ber-", "-nya"],
-        answer: "di-masak",
+        answer: "di-",
         pl: "dimasak — jest gotowane",
       },
       {
@@ -540,7 +540,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "„Zasnąłem niechcący” — zbuduj formę od „tidur”",
         root: "tidur",
         affixes: ["ter-", "ber-", "di-", "-kan"],
-        answer: "ter-tidur",
+        answer: "ter-",
         pl: "tertidur — zasnąć przypadkiem",
       },
       {
@@ -653,7 +653,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj „firma” od rdzenia „usaha”",
         root: "usaha",
         affixes: ["per-...-an", "ke-...-an", "ber-", "di-"],
-        answer: "per-...-an-usaha",
+        answer: "per-...-an",
         pl: "perusahaan — firma",
       },
       {
@@ -662,7 +662,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj „niepodległość” od „merdeka”",
         root: "merdeka",
         affixes: ["ke-...-an", "per-...-an", "me-", "-lah"],
-        answer: "ke-...-an-merdeka",
+        answer: "ke-...-an",
         pl: "kemerdekaan — niepodległość",
       },
       {
@@ -727,7 +727,7 @@ export const CURRICULUM: Lesson[] = [
         prompt: "Zbuduj rzeczownik „rolnictwo” od „tani”",
         root: "tani",
         affixes: ["per-...-an", "ke-...-an", "ter-", "-i"],
-        answer: "per-...-an-tani",
+        answer: "per-...-an",
         pl: "pertanian — rolnictwo",
       },
     ],

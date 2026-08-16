@@ -293,8 +293,7 @@ function AffixBuilder({ ex, finish }: { ex: Extract<Exercise, { kind: "blocks" }
   const options = useMemo(() => shuffle(ex.affixes), [ex]);
   const [chosen, setChosen] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
-  const ok = chosen ? `${chosen}${ex.root}` === ex.answer.replace("-" + ex.root, ex.root) ||
-    ex.answer === `${chosen}${ex.root}` : false;
+  const ok = chosen === ex.answer;
 
   return (
     <div>
