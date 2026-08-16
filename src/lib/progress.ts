@@ -113,7 +113,7 @@ export function useProgress() {
         pl: item.pl,
         lessonId: item.lessonId,
         stage,
-        due: Date.now() + intervals[stage],
+        due: Date.now() + (intervals[stage] ?? 600_000),
       };
       state = { ...state, srs: [...state.srs.filter((s) => s.key !== key), next] };
       persist();
@@ -133,7 +133,7 @@ export function useProgress() {
       state = {
         ...state,
         srs: state.srs.map((s) =>
-          s.key === key ? { ...s, stage, due: Date.now() + intervals[stage] } : s,
+          s.key === key ? { ...s, stage, due: Date.now() + (intervals[stage] ?? 600_000) } : s,
         ),
       };
     }
@@ -152,7 +152,7 @@ export function isLessonUnlocked(lessonId: string, completed: string[]) {
   const index = CURRICULUM.findIndex((l) => l.id === lessonId);
   if (index <= 0) return true;
   const prev = CURRICULUM[index - 1];
-  return completed.includes(prev.id);
+  return prev ? completed.includes(prev.id) : true;
 }
 
 export function levelProgress(level: Level, completed: string[]) {
