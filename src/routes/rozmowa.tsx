@@ -34,8 +34,6 @@ type Bubble = {
   correction?: string;
 };
 
-export default function noop() {}
-
 function VoiceChat() {
   const { completed, addXp } = useProgress();
   const level = currentLevel(completed);
