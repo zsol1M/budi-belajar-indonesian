@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PowtorkiRouteImport } from './routes/powtorki'
+import { Route as PrzygodaRouteImport } from './routes/przygoda'
+import { Route as RozmowaRouteImport } from './routes/rozmowa'
+import { Route as LekcjaIdRouteImport } from './routes/lekcja.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PowtorkiRoute = PowtorkiRouteImport.update({
+  id: '/powtorki',
+  path: '/powtorki',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrzygodaRoute = PrzygodaRouteImport.update({
+  id: '/przygoda',
+  path: '/przygoda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RozmowaRoute = RozmowaRouteImport.update({
+  id: '/rozmowa',
+  path: '/rozmowa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LekcjaIdRoute = LekcjaIdRouteImport.update({
+  id: '/lekcja/$id',
+  path: '/lekcja/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/powtorki': typeof PowtorkiRoute
+  '/przygoda': typeof PrzygodaRoute
+  '/rozmowa': typeof RozmowaRoute
+  '/lekcja/$id': typeof LekcjaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/powtorki': typeof PowtorkiRoute
+  '/przygoda': typeof PrzygodaRoute
+  '/rozmowa': typeof RozmowaRoute
+  '/lekcja/$id': typeof LekcjaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/powtorki': typeof PowtorkiRoute
+  '/przygoda': typeof PrzygodaRoute
+  '/rozmowa': typeof RozmowaRoute
+  '/lekcja/$id': typeof LekcjaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
+  id: '__root__' | '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PowtorkiRoute: typeof PowtorkiRoute
+  PrzygodaRoute: typeof PrzygodaRoute
+  RozmowaRoute: typeof RozmowaRoute
+  LekcjaIdRoute: typeof LekcjaIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +88,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/powtorki': {
+      id: '/powtorki'
+      path: '/powtorki'
+      fullPath: '/powtorki'
+      preLoaderRoute: typeof PowtorkiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/przygoda': {
+      id: '/przygoda'
+      path: '/przygoda'
+      fullPath: '/przygoda'
+      preLoaderRoute: typeof PrzygodaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rozmowa': {
+      id: '/rozmowa'
+      path: '/rozmowa'
+      fullPath: '/rozmowa'
+      preLoaderRoute: typeof RozmowaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lekcja/$id': {
+      id: '/lekcja/$id'
+      path: '/lekcja/$id'
+      fullPath: '/lekcja/$id'
+      preLoaderRoute: typeof LekcjaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PowtorkiRoute: PowtorkiRoute,
+  PrzygodaRoute: PrzygodaRoute,
+  RozmowaRoute: RozmowaRoute,
+  LekcjaIdRoute: LekcjaIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
