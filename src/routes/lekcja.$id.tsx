@@ -32,7 +32,7 @@ function LessonPage() {
   const { id } = Route.useParams();
   const lesson = lessonById(id);
   const navigate = useNavigate();
-  const { addXp, completeLesson, scheduleReview } = useProgress();
+  const { addXp, completeLesson, scheduleReview, loseHeart } = useProgress();
 
   const [stage, setStage] = useState<"grammar" | "quiz" | "result">("grammar");
   const [index, setIndex] = useState(0);
@@ -77,6 +77,7 @@ function LessonPage() {
         },
         r.ok ? "hard" : "fail",
       );
+      if (!r.ok) loseHeart();
     } else {
       addXp(10);
     }
@@ -90,7 +91,7 @@ function LessonPage() {
       const didPass = lesson!.checkpoint ? finalScore >= 80 : finalScore >= 50;
       if (didPass) {
         addXp(lesson!.checkpoint ? 60 : 30);
-        completeLesson(lesson!.id, finalScore);
+        completeLesson(lesson!.id, finalScore, lesson!.context?.label ?? lesson!.title);
         reward.mutate();
       }
       setStage("result");

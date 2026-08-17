@@ -1,3 +1,5 @@
+import { VOCAB_LESSONS } from "./vocab-nodes";
+
 export type Level = "A1" | "A2" | "B1" | "B2";
 
 export type Exercise =
@@ -22,13 +24,19 @@ export type Exercise =
       explain: string;
     };
 
+export type LessonKind = "grammar" | "vocab";
+
+export type LessonContext = { key: string; label: string; brief: string };
+
 export type Lesson = {
   id: string;
   level: Level;
+  kind?: LessonKind;
   title: string;
   subtitle: string;
   icon: string;
   checkpoint?: boolean;
+  context?: LessonContext;
   grammar: { title: string; body: string[]; examples: { id: string; pl: string }[] };
   vocab: { id: string; pl: string }[];
   exercises: Exercise[];
@@ -41,7 +49,7 @@ export const LEVEL_LABELS: Record<Level, string> = {
   B2: "B2 · Konfiksy i Bahasa Gaul",
 };
 
-export const CURRICULUM: Lesson[] = [
+const GRAMMAR_LESSONS: Lesson[] = [
   {
     id: "a1-1",
     level: "A1",
@@ -735,6 +743,23 @@ export const CURRICULUM: Lesson[] = [
 ];
 
 export const LEVEL_ORDER: Level[] = ["A1", "A2", "B1", "B2"];
+
+// Zintegrowana ścieżka: gramatyka i słownictwo przeplatają się w obrębie poziomu.
+const PATH_ORDER = [
+  "a1-1", "a1-v1", "a1-2", "a1-v2", "a1-3", "a1-4",
+  "a2-1", "a2-v1", "a2-2", "a2-v2", "a2-3",
+  "b1-1", "b1-v1", "b1-2", "b1-v2", "b1-v3", "b1-3",
+  "b2-1", "b2-v1", "b2-v2", "b2-2", "b2-v3",
+];
+
+const ALL_LESSONS: Lesson[] = [
+  ...GRAMMAR_LESSONS.map((l) => ({ ...l, kind: l.kind ?? ("grammar" as const) })),
+  ...VOCAB_LESSONS,
+];
+
+export const CURRICULUM: Lesson[] = PATH_ORDER.map(
+  (id) => ALL_LESSONS.find((l) => l.id === id)!,
+).filter(Boolean);
 
 export function lessonById(id: string) {
   return CURRICULUM.find((l) => l.id === id);

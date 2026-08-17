@@ -37,7 +37,7 @@ const SCENARIOS = [
 type Turn = { role: "user" | "assistant"; content: string; translation?: string };
 
 function Adventure() {
-  const { completed, addXp } = useProgress();
+  const { completed, addXp, lastContext } = useProgress();
   const level = currentLevel(completed);
   const [scenario, setScenario] = useState<string | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -52,7 +52,7 @@ function Adventure() {
         role: t.role,
         content: t.content,
       }));
-      return adventureTurn({ data: { scenario: sc, level, history: history.slice(-16) } });
+      return adventureTurn({ data: { scenario: sc, level, history: history.slice(-16), ...(lastContext ? { context: lastContext } : {}) } });
     },
     onSuccess: (res) => {
       setTurns((t) => [...t, { role: "assistant", content: res.scene, translation: res.translation }]);

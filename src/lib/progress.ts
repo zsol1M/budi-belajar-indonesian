@@ -1,5 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { CURRICULUM, LEVEL_ORDER, type Level } from "./curriculum";
+import { supabase } from "@/integrations/supabase/client";
 
 export type SrsItem = {
   key: string;
@@ -13,25 +14,32 @@ export type SrsItem = {
 export type ProgressState = {
   xp: number;
   streak: number;
+  hearts: number;
   lastDay: string | null;
   completed: string[];
   scores: Record<string, number>;
   srs: SrsItem[];
+  lastContext: string | null;
 };
 
-const STORAGE_KEY = "belajar-progress-v1";
+const STORAGE_KEY = "belajar-progress-v2";
+export const MAX_HEARTS = 5;
 
 const EMPTY: ProgressState = {
   xp: 0,
   streak: 0,
+  hearts: MAX_HEARTS,
   lastDay: null,
   completed: [],
   scores: {},
   srs: [],
+  lastContext: null,
 };
 
 let state: ProgressState = EMPTY;
 let loaded = false;
+let cloudUserId: string | null = null;
+let pushTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Set<() => void>();
 
 function today() {
@@ -49,10 +57,86 @@ function load(): ProgressState {
   }
 }
 
-function persist() {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+function emit() {
   listeners.forEach((l) => l());
+}
+
+function persist() {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  emit();
+  schedulePush();
+}
+
+function schedulePush() {
+  if (!cloudUserId) return;
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => void pushCloud(), 800);
+}
+
+async function pushCloud() {
+  if (!cloudUserId) return;
+  await supabase.from("learning_progress").upsert(
+    {
+      user_id: cloudUserId,
+      xp: state.xp,
+      streak: state.streak,
+      hearts: state.hearts,
+      last_day: state.lastDay,
+      completed: state.completed,
+      scores: state.scores,
+      srs: state.srs as unknown as never,
+      last_context: state.lastContext,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" },
+  );
+}
+
+/** Pobiera postęp z chmury i scala go z lokalnym (wygrywa większy postęp). */
+export async function syncFromCloud(userId: string) {
+  cloudUserId = userId;
+  ensureLoaded();
+  const { data } = await supabase
+    .from("learning_progress")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (data) {
+    const remote: ProgressState = {
+      xp: data.xp ?? 0,
+      streak: data.streak ?? 0,
+      hearts: data.hearts ?? MAX_HEARTS,
+      lastDay: data.last_day ?? null,
+      completed: data.completed ?? [],
+      scores: (data.scores as Record<string, number>) ?? {},
+      srs: (data.srs as unknown as SrsItem[]) ?? [],
+      lastContext: data.last_context ?? null,
+    };
+    const mergedCompleted = Array.from(new Set([...state.completed, ...remote.completed]));
+    const srsMap = new Map<string, SrsItem>();
+    [...remote.srs, ...state.srs].forEach((s) => srsMap.set(s.key, s));
+    state = {
+      xp: Math.max(state.xp, remote.xp),
+      streak: Math.max(state.streak, remote.streak),
+      hearts: state.lastDay === today() ? Math.min(state.hearts, remote.hearts) : MAX_HEARTS,
+      lastDay: state.lastDay && state.lastDay > (remote.lastDay ?? "") ? state.lastDay : remote.lastDay,
+      completed: mergedCompleted,
+      scores: { ...remote.scores, ...state.scores },
+      srs: [...srsMap.values()],
+      lastContext: state.lastContext ?? remote.lastContext,
+    };
+  }
+  persist();
+}
+
+export function detachCloud() {
+  cloudUserId = null;
+  state = EMPTY;
+  if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+  emit();
 }
 
 function ensureLoaded() {
@@ -79,15 +163,29 @@ export function useProgress() {
     ensureLoaded();
     const day = today();
     let streak = state.streak;
+    let hearts = state.hearts;
     if (state.lastDay !== day) {
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       streak = state.lastDay === yesterday ? state.streak + 1 : 1;
+      hearts = MAX_HEARTS;
     }
-    state = { ...state, xp: state.xp + amount, streak, lastDay: day };
+    state = { ...state, xp: state.xp + amount, streak, hearts, lastDay: day };
     persist();
   }, []);
 
-  const completeLesson = useCallback((lessonId: string, score: number) => {
+  const loseHeart = useCallback(() => {
+    ensureLoaded();
+    state = { ...state, hearts: Math.max(0, state.hearts - 1) };
+    persist();
+  }, []);
+
+  const refillHearts = useCallback(() => {
+    ensureLoaded();
+    state = { ...state, hearts: MAX_HEARTS };
+    persist();
+  }, []);
+
+  const completeLesson = useCallback((lessonId: string, score: number, context?: string | null) => {
     ensureLoaded();
     const completed = state.completed.includes(lessonId)
       ? state.completed
@@ -96,6 +194,7 @@ export function useProgress() {
       ...state,
       completed,
       scores: { ...state.scores, [lessonId]: Math.max(score, state.scores[lessonId] ?? 0) },
+      lastContext: context ?? state.lastContext,
     };
     persist();
   }, []);
@@ -145,7 +244,16 @@ export function useProgress() {
     persist();
   }, []);
 
-  return { ...snapshot, addXp, completeLesson, scheduleReview, reviewDone, reset };
+  return {
+    ...snapshot,
+    addXp,
+    loseHeart,
+    refillHearts,
+    completeLesson,
+    scheduleReview,
+    reviewDone,
+    reset,
+  };
 }
 
 export function isLessonUnlocked(lessonId: string, completed: string[]) {

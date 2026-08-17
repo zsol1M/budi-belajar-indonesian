@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PowtorkiRouteImport } from './routes/powtorki'
+import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PrzygodaRouteImport } from './routes/przygoda'
 import { Route as RozmowaRouteImport } from './routes/rozmowa'
 import { Route as LekcjaIdRouteImport } from './routes/lekcja.$id'
@@ -20,9 +22,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PowtorkiRoute = PowtorkiRouteImport.update({
   id: '/powtorki',
   path: '/powtorki',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrzygodaRoute = PrzygodaRouteImport.update({
@@ -43,14 +55,18 @@ const LekcjaIdRoute = LekcjaIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/powtorki': typeof PowtorkiRoute
+  '/profil': typeof ProfilRoute
   '/przygoda': typeof PrzygodaRoute
   '/rozmowa': typeof RozmowaRoute
   '/lekcja/$id': typeof LekcjaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/powtorki': typeof PowtorkiRoute
+  '/profil': typeof ProfilRoute
   '/przygoda': typeof PrzygodaRoute
   '/rozmowa': typeof RozmowaRoute
   '/lekcja/$id': typeof LekcjaIdRoute
@@ -58,22 +74,48 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/powtorki': typeof PowtorkiRoute
+  '/profil': typeof ProfilRoute
   '/przygoda': typeof PrzygodaRoute
   '/rozmowa': typeof RozmowaRoute
   '/lekcja/$id': typeof LekcjaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/powtorki'
+    | '/profil'
+    | '/przygoda'
+    | '/rozmowa'
+    | '/lekcja/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
-  id: '__root__' | '/' | '/powtorki' | '/przygoda' | '/rozmowa' | '/lekcja/$id'
+  to:
+    | '/'
+    | '/auth'
+    | '/powtorki'
+    | '/profil'
+    | '/przygoda'
+    | '/rozmowa'
+    | '/lekcja/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/powtorki'
+    | '/profil'
+    | '/przygoda'
+    | '/rozmowa'
+    | '/lekcja/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   PowtorkiRoute: typeof PowtorkiRoute
+  ProfilRoute: typeof ProfilRoute
   PrzygodaRoute: typeof PrzygodaRoute
   RozmowaRoute: typeof RozmowaRoute
   LekcjaIdRoute: typeof LekcjaIdRoute
@@ -88,11 +130,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/powtorki': {
       id: '/powtorki'
       path: '/powtorki'
       fullPath: '/powtorki'
       preLoaderRoute: typeof PowtorkiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/przygoda': {
@@ -121,7 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   PowtorkiRoute: PowtorkiRoute,
+  ProfilRoute: ProfilRoute,
   PrzygodaRoute: PrzygodaRoute,
   RozmowaRoute: RozmowaRoute,
   LekcjaIdRoute: LekcjaIdRoute,

@@ -35,7 +35,7 @@ type Bubble = {
 };
 
 function VoiceChat() {
-  const { completed, addXp } = useProgress();
+  const { completed, addXp, lastContext } = useProgress();
   const level = currentLevel(completed);
   const [bubbles, setBubbles] = useState<Bubble[]>([
     {
@@ -67,7 +67,7 @@ function VoiceChat() {
         role: b.role,
         content: b.content,
       }));
-      return budiChat({ data: { messages: history.slice(-16), level } });
+      return budiChat({ data: { messages: history.slice(-16), level, ...(lastContext ? { context: lastContext } : {}) } });
     },
     onSuccess: async (res) => {
       setBubbles((b) => [
@@ -129,7 +129,7 @@ function VoiceChat() {
         <div className="flex-1">
           <p className="font-display text-lg font-extrabold">Budi</p>
           <p className="text-sm text-muted-foreground">
-            {send.isPending ? "pisze…" : `połączony · poziom ${level}`}
+            {send.isPending ? "pisze…" : `połączony · poziom ${level}${lastContext ? ` · temat: ${lastContext}` : ""}`}
           </p>
         </div>
         <PhoneCall className="size-5 text-success" />

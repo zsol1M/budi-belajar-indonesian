@@ -1,24 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { Flame, Home, MessageCircle, Repeat, Sparkles, Star } from "lucide-react";
+import { Flame, Heart, Home, MessageCircle, Repeat, Sparkles, Star, User } from "lucide-react";
 import type { ReactNode } from "react";
-import { useProgress, dueReviews } from "@/lib/progress";
+import { useProgress, dueReviews, MAX_HEARTS } from "@/lib/progress";
 
 const NAV = [
   { to: "/", label: "Nauka", icon: Home },
   { to: "/rozmowa", label: "Budi", icon: MessageCircle },
   { to: "/przygoda", label: "Przygoda", icon: Sparkles },
   { to: "/powtorki", label: "Powtórki", icon: Repeat },
+  { to: "/profil", label: "Profil", icon: User },
 ] as const;
 
 export function StatsBar() {
-  const { xp, streak } = useProgress();
+  const { xp, streak, hearts } = useProgress();
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-1.5 rounded-full bg-xp px-3 py-1.5 text-sm font-bold text-xp-foreground">
+      <span className="flex items-center gap-1 rounded-full bg-xp px-2.5 py-1.5 text-xs font-bold text-xp-foreground">
         <Star className="size-4" /> {xp} XP
       </span>
-      <span className="flex items-center gap-1.5 rounded-full bg-streak px-3 py-1.5 text-sm font-bold text-streak-foreground">
+      <span className="flex items-center gap-1 rounded-full bg-streak px-2.5 py-1.5 text-xs font-bold text-streak-foreground">
         <Flame className="size-4" /> {streak}
+      </span>
+      <span
+        title={`Serca: ${hearts}/${MAX_HEARTS}`}
+        className="flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1.5 text-xs font-bold text-destructive-foreground"
+      >
+        <Heart className="size-4" /> {hearts}
       </span>
     </div>
   );
@@ -48,7 +55,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                 activeOptions={{ exact: to === "/" }}
                 activeProps={{ className: "bg-primary/12 text-primary" }}
                 inactiveProps={{ className: "text-muted-foreground" }}
-                className="relative flex w-20 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-xs font-bold transition-colors"
+                className="relative flex w-16 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-xs font-bold transition-colors"
               >
                 <Icon className="size-5" />
                 {label}
