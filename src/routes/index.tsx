@@ -113,13 +113,30 @@ function Dashboard() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-base font-extrabold">
-                          {lesson.title}
+                        <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                          <span
+                            className={cn(
+                              "rounded-full px-2 py-0.5 text-[11px] font-bold",
+                              lesson.kind === "vocab"
+                                ? "bg-secondary/15 text-secondary"
+                                : "bg-primary/15 text-primary",
+                            )}
+                          >
+                            {lesson.kind === "vocab" ? "Słownictwo" : "Gramatyka"}
+                          </span>
                           {lesson.checkpoint && (
-                            <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent">
+                            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent">
                               sprawdzian
                             </span>
                           )}
+                          {lesson.context && (
+                            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
+                              Budi: {lesson.context.label}
+                            </span>
+                          )}
+                        </div>
+                        <p className="truncate font-display text-base font-extrabold">
+                          {lesson.title}
                         </p>
                         <p className="truncate text-sm text-muted-foreground">{lesson.subtitle}</p>
                       </div>

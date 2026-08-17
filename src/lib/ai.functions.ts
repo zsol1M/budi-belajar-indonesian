@@ -13,6 +13,7 @@ export const budiChat = createServerFn({ method: "POST" })
       .object({
         messages: z.array(MsgSchema).max(30),
         level: z.string().default("A1"),
+        context: z.string().max(120).optional(),
       })
       .parse(raw),
   )
@@ -20,6 +21,7 @@ export const budiChat = createServerFn({ method: "POST" })
     const system: ChatMsg = {
       role: "system",
       content: `Jesteś "Budi", przyjazny indonezyjski nauczyciel rozmawiający przez telefon z Polakiem uczącym się bahasa Indonesia na poziomie ${data.level}.
+${data.context ? `AKTUALNY KONTEKST UCZNIA (current_vocab_context): "${data.context}". Prowadź rozmowę dokładnie w tym scenariuszu i wymuszaj użycie właśnie tego słownictwa oraz świeżo poznanej gramatyki.` : ""}
 Odpowiadaj KRÓTKO (1-3 zdania) po indonezyjsku, dopasowując słownictwo do poziomu.
 Zwróć WYŁĄCZNIE JSON:
 {"reply":"odpowiedź po indonezyjsku","translation":"tłumaczenie odpowiedzi na polski","correction":"krótka uwaga po polsku o błędzie użytkownika lub pusty string","suggestions":["3 propozycje","co użytkownik może odpowiedzieć","po indonezyjsku"]}`,
@@ -39,6 +41,7 @@ export const adventureTurn = createServerFn({ method: "POST" })
       .object({
         scenario: z.string().max(200),
         level: z.string().default("A1"),
+        context: z.string().max(120).optional(),
         history: z.array(MsgSchema).max(30),
       })
       .parse(raw),
@@ -48,6 +51,7 @@ export const adventureTurn = createServerFn({ method: "POST" })
       role: "system",
       content: `Prowadzisz tekstową grę RPG po indonezyjsku dla Polaka (poziom ${data.level}).
 Scenariusz: "${data.scenario}".
+${data.context ? `current_vocab_context = "${data.context}" — osadź fabułę w tym temacie i wymuszaj użycie tego słownictwa.` : ""}
 Każda tura: opisz scenę po indonezyjsku (2-4 zdania), reaguj na to, co napisał gracz, i pchnij fabułę do przodu.
 Zwróć WYŁĄCZNIE JSON:
 {"scene":"opis sceny po indonezyjsku","translation":"tłumaczenie sceny na polski","feedback":"krótka uwaga po polsku o języku gracza lub pusty string","hints":["3 możliwe kwestie","gracza","po indonezyjsku"],"status":"continue"}`,
